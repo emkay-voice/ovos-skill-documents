@@ -59,6 +59,7 @@ COMMON_READING_VOCABULARY_GET = "ovos.common_reading.vocabulary.get"
 DOCUMENTS_LIST = "ovos.documents.list"        # -> .response {"documents": [...], ...}
 DOCUMENTS_RENAME = "ovos.documents.rename"    # {"id", "title"} ("" = automatic) -> .response {"ok"}
 DOCUMENTS_RESCAN = "ovos.documents.rescan"    # -> .response, as list
+DOCUMENTS_SOURCES = "ovos.documents.sources"  # {"folders", "urls"} -> .response, as list
 
 CONTENT_TYPES = ["document"]
 NO_TITLE_CONFIDENCE = 0.9
@@ -141,6 +142,7 @@ class DocumentsSkill(OVOSSkill):
         self.add_event(DOCUMENTS_LIST, self.handle_list)
         self.add_event(DOCUMENTS_RENAME, self.handle_rename)
         self.add_event(DOCUMENTS_RESCAN, self.handle_rescan)
+        self.add_event(DOCUMENTS_SOURCES, self.handle_sources)
         self.settings_change_callback = self.rescan
         self.rescan(announce=False)
         self._announce_vocabulary()
@@ -344,6 +346,18 @@ class DocumentsSkill(OVOSSkill):
         self.bus.emit(message.response({"ok": ok}))
 
     def handle_rescan(self, message):
+        self.rescan()
+        self.bus.emit(message.response(self._library_data()))
+
+    def handle_sources(self, message):
+        """Set the folders and urls (a list, or text with one per line), save
+        them in the skill's settings, and look for documents at once."""
+        for key in ("folders", "urls"):
+            if key in message.data:
+                self.settings[key] = "\n".join(_as_list(message.data.get(key)))
+        store = getattr(self.settings, "store", None)
+        if callable(store):
+            store()
         self.rescan()
         self.bus.emit(message.response(self._library_data()))
 

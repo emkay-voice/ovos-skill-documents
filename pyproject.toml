@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ovos-skill-documents"
-version = "0.1.0a2"
+version = "0.1.0a3"
 description = "Reads your own documents aloud - text, Markdown, PDF, Word, OpenDocument, EPUB and HTML - from folders on the device or from urls. A provider for the common reading pipeline."
 readme = "README.md"
 license = {text = "Apache-2.0"}
@@ -29,7 +29,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest", "ovos-common-reading-pipeline-plugin"]
+test = ["pytest", "ovos-common-reading-pipeline-plugin", "fastapi", "httpx", "python-multipart"]
 
 [project.urls]
 Homepage = "https://github.com/emkay-voice/ovos-skill-documents"
@@ -41,11 +41,17 @@ Icon = "https://raw.githubusercontent.com/emkay-voice/ovos-skill-documents/main/
 [project.entry-points."opm.skill"]
 "ovos-skill-documents.emkay-voice" = "ovos_skill_documents:DocumentsSkill"
 
+# A page in ovos-control-panel (see panel/__init__.py). Only the panel loads it.
+[project.entry-points."opm.control_panel.page"]
+documents = "ovos_skill_documents.panel:PAGE"
+
 [tool.setuptools]
-packages = ["ovos_skill_documents"]
+packages = ["ovos_skill_documents", "ovos_skill_documents.panel"]
 
 [tool.setuptools.package-dir]
 ovos_skill_documents = ""
+"ovos_skill_documents.panel" = "panel"
 
 [tool.setuptools.package-data]
 ovos_skill_documents = ["locale/**/*", "*.png", "settingsmeta.json"]
+"ovos_skill_documents.panel" = ["page.html", "icon.svg", "i18n/*.json"]
