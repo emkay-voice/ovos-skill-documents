@@ -199,3 +199,23 @@ def test_rescan_finds_a_new_document(skill, docs):
     (docs / "New Story.txt").write_text("Once.")
     data = ask(bus, skill_module.DOCUMENTS_RESCAN)
     assert "New Story" in {d["title"] for d in data["documents"]}
+
+
+def test_sources_are_saved_and_read_at_once(skill, docs, tmp_path):
+    s, bus = skill
+    other = tmp_path / "more"
+    other.mkdir()
+    (other / "letter.txt").write_text("Dear Emkay, hello.")
+    data = ask(bus, skill_module.DOCUMENTS_SOURCES, {"folders": [str(docs), str(other)],
+                                                     "urls": "https://example.com/a.pdf\n"})
+    assert data["folders"] == [str(docs), str(other)]
+    assert data["urls"] == ["https://example.com/a.pdf"]
+    assert s.settings["folders"] == f"{docs}\n{other}"
+    assert "letter" in {d["title"] for d in data["documents"]}
+
+
+def test_sources_leave_out_what_was_not_sent(skill, docs):
+    s, bus = skill
+    ask(bus, skill_module.DOCUMENTS_SOURCES, {"urls": ["https://example.com/b.pdf"]})
+    assert s.settings["folders"] == str(docs)
+    assert s.settings["urls"] == "https://example.com/b.pdf"

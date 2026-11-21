@@ -52,18 +52,29 @@ contents, notes). A word hyphenated at the end of a line is joined again. A
 PDF seldom marks its paragraphs, so it often reads as one paragraph per page; the pipeline reads it sentence by
 sentence all the same. Scanned PDFs (images of text) have no text to read.
 
-## For a control-panel page
+## In the control panel
 
-Everything a page needs to show the library, upload documents and name them:
+With [ovos-control-panel](https://github.com/OpenVoiceOS/ovos-control-panel) on the device, the skill brings
+its own page, **Documents**, under **Reading**. There you can:
+
+- upload a document (up to 50 MB) and give it a title to ask for it by,
+- give any document another title, or go back to its own,
+- delete documents you uploaded (your own folders are left alone),
+- set the folders and web addresses it looks in.
+
+Setting folders and addresses, uploading and deleting need the panel's access token.
+
+### The messages behind it
 
 | Message | Data | Answer (`<message>.response`) |
 |---|---|---|
 | `ovos.documents.list` | | `documents` (id, title, author, name, kind, source, custom_title, modified; newest first), `upload_folder`, `folders`, `urls`, `formats` |
 | `ovos.documents.rename` | `id`, `title` (`""` = back to the automatic title) | `ok` |
 | `ovos.documents.rescan` | | as `list` |
+| `ovos.documents.sources` | `folders`, `urls` (lists, or text with one per line) | as `list`, after saving them in the settings and looking again |
 
-A page uploads by putting files in `upload_folder` and asking for a rescan. The library is also kept in
-`library.json` in the skill's data folder.
+The page uploads by putting files in `upload_folder` and asking for a rescan, so it has to run on the same device
+as the skill. The library is also kept in `library.json` in the skill's data folder.
 
 ## Install
 
