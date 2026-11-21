@@ -55,7 +55,7 @@ sentence all the same. Scanned PDFs (images of text) have no text to read.
 ## In the control panel
 
 With [ovos-control-panel](https://github.com/OpenVoiceOS/ovos-control-panel) on the device, the skill brings
-its own page, **Documents**, under **Reading**. There you can:
+its own page, **Documents**, under **Library**. There you can:
 
 - upload a document (up to 50 MB) and give it a title to ask for it by,
 - give any document another title, or go back to its own,
