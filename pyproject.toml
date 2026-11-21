@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ovos-skill-documents"
-version = "0.1.0a1"
+version = "0.1.0a2"
 description = "Reads your own documents aloud - text, Markdown, PDF, Word, OpenDocument, EPUB and HTML - from folders on the device or from urls. A provider for the common reading pipeline."
 readme = "README.md"
 license = {text = "Apache-2.0"}
