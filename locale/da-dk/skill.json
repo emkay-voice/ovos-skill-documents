@@ -1,0 +1,23 @@
+{
+  "skill_id": "ovos-skill-documents.emkay-voice",
+  "source": "https://github.com/emkay-voice/ovos-skill-documents",
+  "package_name": "ovos-skill-documents",
+  "pip_spec": "ovos-skill-documents",
+  "license": "Apache-2.0",
+  "author": "emkay-voice",
+  "name": "Dokumenter",
+  "description": "Læser dine egne dokumenter op - tekst, Markdown, PDF, Word, OpenDocument, EPUB og HTML - fra mapper på enheden eller fra url'er.",
+  "examples": [
+    "læs dokumentet ferieplaner",
+    "læs mine dokumenter",
+    "læs et dokument"
+  ],
+  "tags": [
+    "documents",
+    "reading",
+    "pdf",
+    "provider",
+    "common reading"
+  ],
+  "icon": "https://raw.githubusercontent.com/emkay-voice/ovos-skill-documents/main/icon.png"
+}

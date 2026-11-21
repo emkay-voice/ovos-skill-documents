@@ -1,0 +1,33 @@
+{
+  "skillMetadata": {
+    "sections": [
+      {
+        "name": "Where your documents are",
+        "fields": [
+          {
+            "type": "label",
+            "label": "Folders on this device and urls, one per line. A url is a document (.pdf, .docx, ...) or a page that links to documents, such as a web server's folder listing. The skill's own upload folder is always read too."
+          },
+          {
+            "name": "folders",
+            "type": "text",
+            "label": "Folders",
+            "value": ""
+          },
+          {
+            "name": "urls",
+            "type": "text",
+            "label": "Urls",
+            "value": ""
+          },
+          {
+            "name": "rescan_minutes",
+            "type": "number",
+            "label": "Look for new documents every (minutes, 0 = only at start)",
+            "value": "10"
+          }
+        ]
+      }
+    ]
+  }
+}

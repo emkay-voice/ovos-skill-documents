@@ -1,0 +1,22 @@
+{
+  "skill_id": "ovos-skill-documents.emkay-voice",
+  "source": "https://github.com/emkay-voice/ovos-skill-documents",
+  "package_name": "ovos-skill-documents",
+  "pip_spec": "ovos-skill-documents",
+  "license": "Apache-2.0",
+  "author": "emkay-voice",
+  "name": "Documenten",
+  "description": "Leest je eigen documenten voor - tekst, Markdown, PDF, Word, OpenDocument, EPUB en HTML - uit mappen op het apparaat of van URL's.",
+  "examples": [
+    "lees het document vakantieplannen voor",
+    "lees mijn documenten voor"
+  ],
+  "tags": [
+    "documents",
+    "reading",
+    "pdf",
+    "provider",
+    "common reading"
+  ],
+  "icon": "https://raw.githubusercontent.com/emkay-voice/ovos-skill-documents/main/icon.png"
+}

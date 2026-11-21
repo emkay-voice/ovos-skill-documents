@@ -1,0 +1,22 @@
+{
+  "skill_id": "ovos-skill-documents.emkay-voice",
+  "source": "https://github.com/emkay-voice/ovos-skill-documents",
+  "package_name": "ovos-skill-documents",
+  "pip_spec": "ovos-skill-documents",
+  "license": "Apache-2.0",
+  "author": "emkay-voice",
+  "name": "Documentos",
+  "description": "Lee en voz alta tus propios documentos - texto, Markdown, PDF, Word, OpenDocument, EPUB y HTML - desde carpetas del dispositivo o desde URL.",
+  "examples": [
+    "léeme el documento planes de vacaciones",
+    "lee mis documentos"
+  ],
+  "tags": [
+    "documents",
+    "reading",
+    "pdf",
+    "provider",
+    "common reading"
+  ],
+  "icon": "https://raw.githubusercontent.com/emkay-voice/ovos-skill-documents/main/icon.png"
+}

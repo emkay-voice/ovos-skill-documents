@@ -1,0 +1,22 @@
+{
+  "skill_id": "ovos-skill-documents.emkay-voice",
+  "source": "https://github.com/emkay-voice/ovos-skill-documents",
+  "package_name": "ovos-skill-documents",
+  "pip_spec": "ovos-skill-documents",
+  "license": "Apache-2.0",
+  "author": "emkay-voice",
+  "name": "Dokumente",
+  "description": "Liest deine eigenen Dokumente vor - Text, Markdown, PDF, Word, OpenDocument, EPUB und HTML - aus Ordnern auf dem Gerät oder von URLs.",
+  "examples": [
+    "lies mir das dokument urlaubspläne vor",
+    "lies meine dokumente vor"
+  ],
+  "tags": [
+    "documents",
+    "reading",
+    "pdf",
+    "provider",
+    "common reading"
+  ],
+  "icon": "https://raw.githubusercontent.com/emkay-voice/ovos-skill-documents/main/icon.png"
+}
