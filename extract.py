@@ -236,23 +236,48 @@ def _odf_blocks(element, paragraphs):
 
 _BLOCKS = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "li", "blockquote", "dd", "dt"]
 
+# parts of a book (EPUB 3 structural semantics, epub:type) that are not the
+# work itself: the edition's own pages, tables of contents, notes. Read from
+# the start of a book they would come first ("This ebook is the product of
+# many hours of hard work by volunteers...").
+SKIP_EPUB_TYPES = {"titlepage", "halftitlepage", "imprint", "colophon", "copyright-page", "toc",
+                   "landmarks", "loi", "lot", "page-list", "index", "endnotes", "footnotes",
+                   "rearnotes", "noteref"}
+
+
+def _skipped(tag) -> bool:
+    return bool(SKIP_EPUB_TYPES & set((tag.get("epub:type") or "").split()))
+
 
 def html_paragraphs(html: str) -> List[str]:
     """The readable blocks of an HTML page: headings, paragraphs, list
-    items, quotes. Text is taken with no separator and its whitespace
-    collapsed (a space at every tag boundary would put one before every
-    comma after a <b>, and stripping would glue words together); a <br>
-    is a space. A block inside another block is read once, with it."""
+    items, quotes, and table rows. Text is taken with no separator and its
+    whitespace collapsed (a space at every tag boundary would put one before
+    every comma after a <b>, and stripping would glue words together); a
+    <br> is a space. A block inside another block is read once, with it.
+
+    A table row is one paragraph, its cells joined by ": " - that is how a
+    play's dialogue is set (Standard Ebooks: the speaker, then the line), so
+    it reads "Ivanov: ...". The parts of an EPUB that are not the work
+    (SKIP_EPUB_TYPES) are left out."""
     from bs4 import BeautifulSoup
     soup = BeautifulSoup(html, "html.parser")
-    for tag in soup.find_all(["script", "style", "nav", "header", "footer", "pre", "table",
+    for tag in soup.find_all(["script", "style", "nav", "header", "footer", "pre",
                               "figure", "aside", "form", "noscript", "sup"]):
+        tag.decompose()
+    for tag in soup.find_all(_skipped):
         tag.decompose()
     for br in soup.find_all("br"):
         br.replace_with(" ")
+    for block in soup.find_all(_BLOCKS):  # blocks read together (in a cell, a quote) stay apart
+        block.append(" ")
     paragraphs = []
-    for tag in soup.find_all(_BLOCKS):
-        if tag.find_parent(_BLOCKS):
+    for tag in soup.find_all(_BLOCKS + ["tr"]):
+        if tag.name == "tr":
+            cells = [" ".join(cell.get_text().split()) for cell in tag.find_all(["td", "th"], recursive=False)]
+            paragraphs.append(": ".join(cell for cell in cells if cell))
+            continue
+        if tag.find_parent(_BLOCKS) or tag.find_parent("tr"):
             continue
         paragraphs.append(" ".join(tag.get_text().split()))
     if not paragraphs and soup.body:  # a page with no blocks at all: its text

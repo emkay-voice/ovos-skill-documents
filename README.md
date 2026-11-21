@@ -45,8 +45,10 @@ Markdown heading, the HTML `<title>`), the link's text on a page of links, or th
 
 ## What is read
 
-Paragraphs, headings and list items, in order. Left out because they don't read well aloud: tables, code blocks, page
-numbers, footnote markers, navigation, scripts and styles. A word hyphenated at the end of a line is joined again. A
+Paragraphs, headings and list items, in order. A table row is read as one line with its cells joined by ": ", so a
+play reads "Ivanov: I am reading". Left out because they don't read well aloud: code blocks, page numbers, footnote
+markers, navigation, scripts and styles, and an EPUB's own edition pages (title page, imprint, colophon, tables of
+contents, notes). A word hyphenated at the end of a line is joined again. A
 PDF seldom marks its paragraphs, so it often reads as one paragraph per page; the pipeline reads it sentence by
 sentence all the same. Scanned PDFs (images of text) have no text to read.
 
