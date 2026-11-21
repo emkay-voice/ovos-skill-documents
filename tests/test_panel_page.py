@@ -23,7 +23,7 @@ def test_the_page_description_names_files_that_exist():
     for key in ("html", "icon"):
         assert (PANEL / page[key]).is_file(), key
     assert callable(page["routes"])
-    assert page["group"] == panel.READING["id"] and panel.READING in page["groups"]
+    assert page["group"] == panel.LIBRARY["id"] and panel.LIBRARY in page["groups"]
     [(path, size)] = page["uploads"].items()
     assert path == "/api/documents/upload" and panel.MAX_UPLOAD < size <= 64 * 1024 * 1024
 
@@ -39,7 +39,7 @@ def test_the_page_speaks_every_language_the_skill_does():
     used = set(re.findall(r'data-i18n="([^"]+)"', html)) | set(re.findall(r'\bt\("([^"]+)"', html))
     shell = {k for k in used if k.startswith("file.")}
     assert used - shell <= keys, "a string the page uses has no translation"
-    assert keys - used <= {"reading.group", "documents.title"}, "a translation nothing uses"
+    assert keys - used <= {"nav.group.library", "documents.title"}, "a translation nothing uses"
 
 
 @pytest.mark.parametrize("name, safe", [
