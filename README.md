@@ -62,19 +62,23 @@ its own page, **Documents**, under **Library**. There you can:
 - delete documents you uploaded (your own folders are left alone),
 - set the folders and web addresses it looks in.
 
-Setting folders and addresses, uploading and deleting need the panel's access token.
+Setting folders and addresses, uploading and deleting need the panel's access token. The page is described in
+`controlpanel.json`, with its words in `locale/<lang>/controlpanel.json`: the panel draws it, and no code of the
+skill runs in the panel.
 
 ### The messages behind it
 
 | Message | Data | Answer (`<message>.response`) |
 |---|---|---|
-| `ovos.documents.list` | | `documents` (id, title, author, name, kind, source, custom_title, modified; newest first), `upload_folder`, `folders`, `urls`, `formats` |
+| `ovos.documents.list` | | `documents` (id, title, author, name, kind, source, custom_title, modified, uploaded; newest first), `upload_folder`, `folders`, `urls`, `formats` |
 | `ovos.documents.rename` | `id`, `title` (`""` = back to the automatic title) | `ok` |
 | `ovos.documents.rescan` | | as `list` |
-| `ovos.documents.sources` | `folders`, `urls` (lists, or text with one per line) | as `list`, after saving them in the settings and looking again |
+| `ovos.documents.sources` | `folders`, `urls` (lists, or text with one per line) | as `list`, after saving them in the settings and looking again, or `error` |
+| `ovos.documents.upload` | a file in parts: `upload` (one id), `name`, `part` (from 0), `parts`, `data` (base64), `title` | `ok` for a part; for the last, as `list` with `document`; or `error` |
+| `ovos.documents.delete` | `id` of an uploaded document | as `list`, or `error` |
 
-The page uploads by putting files in `upload_folder` and asking for a rescan, so it has to run on the same device
-as the skill. The library is also kept in `library.json` in the skill's data folder.
+An upload comes over the message bus, so the panel can run on another device than the skill; the skill writes it
+in `upload_folder`. The library is also kept in `library.json` in the skill's data folder.
 
 ## Install
 

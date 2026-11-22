@@ -10,9 +10,9 @@ folder listing). See library.py for how the documents are found and named,
 and extract.py for how their text is taken out.
 
 Made for Emkay (https://github.com/emkay-voice/emkay), and meant for any
-OpenVoiceOS device. It is ready for a control-panel page that uploads
+OpenVoiceOS device. Its control-panel page (controlpanel.json) uploads
 documents and names them: the upload folder is scanned like any other, and
-the ovos.documents.* messages below list, rename and rescan the library.
+the ovos.documents.* messages below list, rename, rescan, upload and delete.
 
 DECISIONS (see ovos-skill-common-reading-example for the list every provider
 goes through):
@@ -29,6 +29,7 @@ goes through):
 - A request that names no title ("read me a document") gets the newest one.
 - Nothing is fetched from the internet unless a url is configured.
 """
+import base64
 import hashlib
 import json
 import re
@@ -60,6 +61,31 @@ DOCUMENTS_LIST = "ovos.documents.list"        # -> .response {"documents": [...]
 DOCUMENTS_RENAME = "ovos.documents.rename"    # {"id", "title"} ("" = automatic) -> .response {"ok"}
 DOCUMENTS_RESCAN = "ovos.documents.rescan"    # -> .response, as list
 DOCUMENTS_SOURCES = "ovos.documents.sources"  # {"folders", "urls"} -> .response, as list
+DOCUMENTS_UPLOAD = "ovos.documents.upload"    # a file in parts: {"upload", "name", "part", "parts", "data", "title"}
+DOCUMENTS_DELETE = "ovos.documents.delete"    # {"id"} of an uploaded document -> .response, as list
+#: the largest document that can be uploaded
+MAX_UPLOAD = 50 * 1024 * 1024
+#: an upload whose parts stop coming is forgotten after this long (s)
+UPLOAD_WAIT = 10 * 60
+
+
+def safe_name(name):
+    """A file name that stays in the folder it is written to."""
+    import unicodedata
+    name = unicodedata.normalize("NFC", Path(str(name or "")).name).strip()
+    name = re.sub(r"[\x00-\x1f/\\:*?\"<>|]+", "_", name).lstrip(".")
+    return name[:180] or "document"
+
+
+def free_path(folder, name):
+    """``name`` in ``folder``, or ``name (2)`` and so on when it is taken."""
+    path = folder / name
+    stem, suffix = path.stem, path.suffix
+    n = 2
+    while path.exists():
+        path = folder / f"{stem} ({n}){suffix}"
+        n += 1
+    return path
 
 CONTENT_TYPES = ["document"]
 NO_TITLE_CONFIDENCE = 0.9
@@ -143,6 +169,9 @@ class DocumentsSkill(OVOSSkill):
         self.add_event(DOCUMENTS_RENAME, self.handle_rename)
         self.add_event(DOCUMENTS_RESCAN, self.handle_rescan)
         self.add_event(DOCUMENTS_SOURCES, self.handle_sources)
+        self.add_event(DOCUMENTS_UPLOAD, self.handle_upload)
+        self.add_event(DOCUMENTS_DELETE, self.handle_delete)
+        self._uploads = {}  # upload id -> the parts received so far
         self.settings_change_callback = self.rescan
         self.rescan(announce=False)
         self._announce_vocabulary()
@@ -326,10 +355,21 @@ class DocumentsSkill(OVOSSkill):
 
     # --- the library, as data (for a control-panel page) ------------------------------------
 
+    def _uploaded(self, entry):
+        """Whether a document is one that was uploaded (and so may be deleted)."""
+        if entry.kind != "file" or not entry.source:
+            return False
+        try:
+            Path(entry.source).resolve().relative_to(self.upload_folder.resolve())
+        except (ValueError, OSError):
+            return False
+        return True
+
     def _library_data(self):
         return {"documents": [{"id": e.id, "title": e.title, "author": e.author, "name": e.name,
                                "kind": e.kind, "source": e.source, "custom_title": e.custom_title,
-                               "modified": e.modified} for e in self.library.sorted()],
+                               "modified": e.modified, "uploaded": self._uploaded(e)}
+                              for e in self.library.sorted()],
                 "upload_folder": str(self.upload_folder),
                 "folders": _as_list(self.settings.get("folders")),
                 "urls": self.urls(),
@@ -352,12 +392,78 @@ class DocumentsSkill(OVOSSkill):
     def handle_sources(self, message):
         """Set the folders and urls (a list, or text with one per line), save
         them in the skill's settings, and look for documents at once."""
+        if any(not re.match(r"^https?://\S+$", u) for u in _as_list(message.data.get("urls"))):
+            self.bus.emit(message.response({"error": "documents.err.url"}))
+            return
         for key in ("folders", "urls"):
             if key in message.data:
                 self.settings[key] = "\n".join(_as_list(message.data.get(key)))
         store = getattr(self.settings, "store", None)
         if callable(store):
             store()
+        self.rescan()
+        self.bus.emit(message.response(self._library_data()))
+
+    def handle_upload(self, message):
+        """A document uploaded in parts (from the control panel's page): the
+        parts are kept until the last one, then the file is written into the
+        upload folder, the library looked through again, and the document
+        given its title, if one came with it."""
+        d = message.data
+        try:
+            upload, part, parts = str(d["upload"])[:64], int(d["part"]), int(d["parts"])
+            chunk = base64.b64decode(str(d.get("data") or ""), validate=True)
+        except (KeyError, ValueError, TypeError):
+            self.bus.emit(message.response({"error": "documents.err.upload"}))
+            return
+        name = safe_name(d.get("name"))
+        if Path(name).suffix.lower() not in SUPPORTED:
+            self.bus.emit(message.response({"error": "documents.err.kind"}))
+            return
+        now = time.time()
+        with self._lock:
+            for old in [k for k, v in self._uploads.items() if now - v["t"] > UPLOAD_WAIT]:
+                del self._uploads[old]
+            got = self._uploads.setdefault(upload, {"t": now, "parts": parts, "data": {}, "size": 0})
+            if got["parts"] != parts or not 0 <= part < parts or got["size"] + len(chunk) > MAX_UPLOAD:
+                self._uploads.pop(upload, None)
+                self.bus.emit(message.response({"error": "documents.err.upload"}))
+                return
+            got["data"][part] = chunk
+            got["size"] += len(chunk)
+            got["t"] = now
+            if len(got["data"]) < parts:
+                self.bus.emit(message.response({"ok": True, "received": len(got["data"])}))
+                return
+            del self._uploads[upload]
+        blob = b"".join(got["data"][n] for n in range(parts))
+        if not blob:
+            self.bus.emit(message.response({"error": "documents.err.upload"}))
+            return
+        path = free_path(self.upload_folder, name)
+        tmp = path.with_name(f".{path.name}.part")
+        tmp.write_bytes(blob)
+        tmp.replace(path)
+        self.rescan()
+        want = str(path.resolve())
+        entry = next((e for e in self.library.sorted()
+                      if e.kind == "file" and e.source and str(Path(e.source).resolve()) == want), None)
+        title = str(d.get("title") or "").strip()[:300]
+        if entry is not None and title:
+            with self._lock:
+                self.library.rename(entry.id, title)
+            self._announce_vocabulary()
+        data = self._library_data()
+        data["document"] = next((x for x in data["documents"] if entry and x["id"] == entry.id), None)
+        self.bus.emit(message.response(data))
+
+    def handle_delete(self, message):
+        """Delete an uploaded document. A folder of your own is yours to tidy."""
+        entry = self.library.entries.get(message.data.get("id"))
+        if entry is None or not self._uploaded(entry):
+            self.bus.emit(message.response({"error": "documents.err.notmine"}))
+            return
+        Path(entry.source).unlink(missing_ok=True)
         self.rescan()
         self.bus.emit(message.response(self._library_data()))
 

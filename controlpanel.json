@@ -1,0 +1,109 @@
+{
+ "controlpanel": 1,
+ "id": "documents",
+ "path": "/documents",
+ "title": "documents.title",
+ "group": "library",
+ "groups": [
+  {
+   "id": "library",
+   "title": "nav.group.library",
+   "order": 5,
+   "level": "everyday"
+  }
+ ],
+ "order": 10,
+ "icon": "controlpanel.svg",
+ "bus": "ovos.documents.",
+ "blocks": [
+  {
+   "type": "text",
+   "text": "documents.intro"
+  },
+  {
+   "type": "upload",
+   "heading": "documents.upload.title",
+   "send": "ovos.documents.upload",
+   "accept": [
+    ".docx",
+    ".epub",
+    ".htm",
+    ".html",
+    ".markdown",
+    ".md",
+    ".odt",
+    ".pdf",
+    ".text",
+    ".txt"
+   ],
+   "max_mb": 50,
+   "field": {
+    "name": "title",
+    "label": "documents.upload.name",
+    "max_length": 300
+   }
+  },
+  {
+   "type": "text",
+   "text": "documents.list.hint"
+  },
+  {
+   "type": "list",
+   "heading": "documents.list.title",
+   "query": "ovos.documents.list",
+   "items": "documents",
+   "key": "id",
+   "title": "{title}",
+   "meta": "documents.meta",
+   "empty": "documents.none",
+   "rename": {
+    "field": "title",
+    "send": "ovos.documents.rename",
+    "max_length": 300,
+    "privileged": false
+   },
+   "actions": [
+    {
+     "label": "documents.list.delete",
+     "send": "ovos.documents.delete",
+     "when": "uploaded",
+     "confirm": "documents.list.sure"
+    }
+   ]
+  },
+  {
+   "type": "actions",
+   "actions": [
+    {
+     "label": "documents.rescan",
+     "send": "ovos.documents.rescan",
+     "privileged": false
+    }
+   ]
+  },
+  {
+   "type": "form",
+   "heading": "documents.sources.title",
+   "query": "ovos.documents.list",
+   "save": {
+    "send": "ovos.documents.sources"
+   },
+   "fields": [
+    {
+     "name": "folders",
+     "label": "documents.sources.folders",
+     "type": "lines"
+    },
+    {
+     "name": "urls",
+     "label": "documents.sources.urls",
+     "type": "lines"
+    }
+   ]
+  },
+  {
+   "type": "text",
+   "text": "documents.ask"
+  }
+ ]
+}
