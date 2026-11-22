@@ -19,5 +19,6 @@
  "documents.err.kind": "That kind of file cannot be read.",
  "documents.err.upload": "The upload did not arrive whole; try again.",
  "documents.err.notmine": "Only an uploaded document can be deleted here.",
- "documents.err.url": "A web address starts with http:// or https://."
+ "documents.err.url": "A web address starts with http:// or https://.",
+ "documents.list.rename": "Save title"
 }

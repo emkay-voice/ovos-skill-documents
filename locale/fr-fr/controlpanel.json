@@ -19,5 +19,6 @@
  "documents.err.kind": "Ce type de fichier ne peut pas être lu.",
  "documents.err.upload": "L'envoi n'est pas arrivé en entier ; réessaie.",
  "documents.err.notmine": "Seul un document envoyé ici peut être supprimé ici.",
- "documents.err.url": "Une adresse web commence par http:// ou https://."
+ "documents.err.url": "Une adresse web commence par http:// ou https://.",
+ "documents.list.rename": "Enregistrer le titre"
 }

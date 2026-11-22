@@ -19,5 +19,6 @@
  "documents.err.kind": "Questo tipo di file non si può leggere.",
  "documents.err.upload": "Il caricamento non è arrivato intero; riprova.",
  "documents.err.notmine": "Qui si può eliminare solo un documento caricato.",
- "documents.err.url": "Un indirizzo web inizia con http:// o https://."
+ "documents.err.url": "Un indirizzo web inizia con http:// o https://.",
+ "documents.list.rename": "Salva titolo"
 }

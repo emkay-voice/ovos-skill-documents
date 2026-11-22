@@ -19,5 +19,6 @@
  "documents.err.kind": "Dat soort bestand kan niet gelezen worden.",
  "documents.err.upload": "De upload kwam niet heel aan; probeer het opnieuw.",
  "documents.err.notmine": "Alleen een geüpload document kan hier verwijderd worden.",
- "documents.err.url": "Een webadres begint met http:// of https://."
+ "documents.err.url": "Een webadres begint met http:// of https://.",
+ "documents.list.rename": "Titel opslaan"
 }

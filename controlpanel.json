@@ -60,7 +60,8 @@
     "field": "title",
     "send": "ovos.documents.rename",
     "max_length": 300,
-    "privileged": false
+    "privileged": false,
+    "label": "documents.list.rename"
    },
    "actions": [
     {

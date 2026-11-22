@@ -19,5 +19,6 @@
  "documents.err.kind": "Esse tipo de ficheiro não pode ser lido.",
  "documents.err.upload": "O envio não chegou completo; tente de novo.",
  "documents.err.notmine": "Só um documento enviado pode ser apagado aqui.",
- "documents.err.url": "Um endereço web começa por http:// ou https://."
+ "documents.err.url": "Um endereço web começa por http:// ou https://.",
+ "documents.list.rename": "Guardar título"
 }

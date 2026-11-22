@@ -19,5 +19,6 @@
  "documents.err.kind": "Diese Art Datei kann nicht gelesen werden.",
  "documents.err.upload": "Der Upload kam nicht vollständig an; versuch es noch einmal.",
  "documents.err.notmine": "Nur ein hochgeladenes Dokument kann hier gelöscht werden.",
- "documents.err.url": "Eine Webadresse beginnt mit http:// oder https://."
+ "documents.err.url": "Eine Webadresse beginnt mit http:// oder https://.",
+ "documents.list.rename": "Titel speichern"
 }

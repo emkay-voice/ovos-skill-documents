@@ -19,5 +19,6 @@
  "documents.err.kind": "Den slags fil kan ikke læses.",
  "documents.err.upload": "Uploaden kom ikke helt frem; prøv igen.",
  "documents.err.notmine": "Kun et uploadet dokument kan slettes her.",
- "documents.err.url": "En webadresse starter med http:// eller https://."
+ "documents.err.url": "En webadresse starter med http:// eller https://.",
+ "documents.list.rename": "Gem titel"
 }

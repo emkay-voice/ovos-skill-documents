@@ -19,5 +19,6 @@
  "documents.err.kind": "Ese tipo de archivo no se puede leer.",
  "documents.err.upload": "La subida no llegó completa; inténtalo de nuevo.",
  "documents.err.notmine": "Aquí solo se puede borrar un documento subido.",
- "documents.err.url": "Una dirección web empieza por http:// o https://."
+ "documents.err.url": "Una dirección web empieza por http:// o https://.",
+ "documents.list.rename": "Guardar título"
 }
